@@ -3,4 +3,5 @@ Arduino Transmitter test
 
 433Mhz/315MHz transmitter test with Arduino framework
 
-Board: Custom Digispark USB ATTiny85
+Boards:
+- custom Digispark USB ATTiny85 8MHz, LED Pin 1

@@ -1,56 +1,53 @@
-// based on the https://gist.github.com/LarsBergqvist/04a78df8f61441339f591c20dd606b39
-//
-// Depends on the RCSwitch library https://github.com/sui77/rc-switch
-
 #include <Arduino.h>
-#include "RCSwitch.h"
+#include <Manchester.h>
 
 /*
- * Unique ID:s (4 bits, 0-15) for each measurement type so that the receiver
- * understands how to interpret the data on arrival
- */
-#define TX_ID  0
 
-#define TX_PIN 0                     // <-- corresponds to the P0 on Digispark
-#define LED    1
+  Manchester Transmitter example
 
-RCSwitch transmitter = RCSwitch();
+  In this example transmitter will send 10 bytes array  per transmittion
 
-unsigned long code32BitsToSend(int measurementTypeID, unsigned long data)
-{
-    unsigned long checkSum = measurementTypeID + data;
-    unsigned long byte3 = ((0x0F & measurementTypeID) << 4);
-    unsigned long byte2_and_byte_1 = 0xFFFF & data;
-    unsigned long byte0 = 0xFF & checkSum;
-    unsigned long dataToSend = (byte3 << 24) + (byte2_and_byte_1 << 8) + byte0;
+  try different speeds using this constants, your maximum possible speed will
+  depend on various factors like transmitter type, distance, microcontroller speed, ...
 
-    return dataToSend;
+  MAN_300 0
+  MAN_600 1
+  MAN_1200 2
+  MAN_2400 3
+  MAN_4800 4
+  MAN_9600 5
+  MAN_19200 6
+  MAN_38400 7
+
+*/
+
+#define TX_PIN      D0  //pin where your transmitter is connected
+
+uint8_t moo = 1; //last led status
+uint8_t data[20] = {11, '1','2', '3', '4', '5', '6', '7', '8', '9','1','2','3','4','5','6','7','8','9'};
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("\n***\nTransmitter is up. Hey there!\n***\n");
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, moo);
+  man.setupTransmit(TX_PIN, MAN_300);
 }
 
-void sendSignal()
-{
-  // use alternating bits for the value for better reliability
-  unsigned long valueToSend = 0b0101010;
-  unsigned long dataToSend = code32BitsToSend(TX_ID, valueToSend);
-  transmitter.send(dataToSend, 32);
-}
+
+uint8_t datalength = 2;   //at least two data
+
+void loop() {
+  data[0] = datalength;
+
+  man.transmitArray(datalength, data);
+  moo = ++moo % 2;
+  digitalWrite(LED_BUILTIN, moo);
 
 
-/**********
- *  MAIN  *
- **********/
-
-void setup()
-{
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, LOW);
-  transmitter.enableTransmit(TX_PIN);
-}
-
-void loop()
-{
-  digitalWrite(LED, HIGH);
-  sendSignal();
-  digitalWrite(LED, LOW);
-  delay(2000);
+  delay(800);
+  datalength++;
+  if(datalength > 18)
+    datalength = 2;
 }
