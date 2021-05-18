@@ -11,8 +11,8 @@
  */
 #define TX_ID  0
 
-#define TX_PIN 0                     // <-- corresponds to the P0 on Digispark
-#define LED    1
+#define TX_PIN PB2
+#define LED    PB1
 
 RCSwitch transmitter = RCSwitch();
 
@@ -50,7 +50,9 @@ void setup()
 void loop()
 {
   digitalWrite(LED, HIGH);
-  sendSignal();
+  // sendSignal();
+  // Bathroom remote message pattern: 0xC013<XY>
+  transmitter.send(0xC013FF, 24);
   digitalWrite(LED, LOW);
   delay(2000);
 }
