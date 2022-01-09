@@ -44,7 +44,7 @@ void setup() {
   digitalWrite(LED, LED_LOW);
   transmitter.enableTransmit(TX_PIN);
   transmitter.setRepeatTransmit(20);
-  transmitter.setProtocol(1);
+  transmitter.setProtocol(13);
 }
 
 void loop() {
