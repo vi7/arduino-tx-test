@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "RCSwitch.h"
+#include <RCSwitch.h>
 
 #define MSG_LENGTH  24
 
