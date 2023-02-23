@@ -14,7 +14,11 @@
 #define OUTLET4_OFF 0x15D0C
 #define OUTLET5_ON  0x17503
 #define OUTLET5_OFF 0x1750C
+#define SSR_OUTLET_ON   0x17703
+#define SSR_OUTLET_OFF  0x1770C
 
+// Cheap LED strip driver remote
+#define BRIGHT_UP 0xC01305
 
 #if defined(ESP8266)
   #define TX_PIN    12  // D6
@@ -33,6 +37,9 @@
   #define LED_LOW   LOW
 #endif
 
+#define CODE_01 SSR_OUTLET_ON
+#define CODE_02 SSR_OUTLET_OFF
+
 RCSwitch transmitter = RCSwitch();
 
 /**********
@@ -40,47 +47,21 @@ RCSwitch transmitter = RCSwitch();
  **********/
 
 void setup() {
+  Serial.begin(115200);
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LED_LOW);
   transmitter.enableTransmit(TX_PIN);
-  transmitter.setRepeatTransmit(20);
-  transmitter.setProtocol(13);
+  // transmitter.setRepeatTransmit(20);
+  transmitter.setProtocol(1);
 }
 
 void loop() {
   digitalWrite(LED, LED_HIGH);
-  transmitter.send(OUTLET1_ON, MSG_LENGTH);
+  Serial.printf("[%lu] Sending 0x%X\n", millis(), CODE_01);
+  transmitter.send(CODE_01, MSG_LENGTH);
   delay(1000);
   digitalWrite(LED, LED_LOW);
-  transmitter.send(OUTLET1_OFF, MSG_LENGTH);
+  // Serial.printf("[%lu] Sending 0x%X\n", millis(), CODE_02);
+  // transmitter.send(CODE_02, MSG_LENGTH);
   delay(2000);
-
-  digitalWrite(LED, LED_HIGH);
-  transmitter.send(OUTLET2_ON, MSG_LENGTH);
-  delay(1000);
-  digitalWrite(LED, LED_LOW);
-  transmitter.send(OUTLET2_OFF, MSG_LENGTH);
-  delay(2000);
-
-  digitalWrite(LED, LED_HIGH);
-  transmitter.send(OUTLET3_ON, MSG_LENGTH);
-  delay(1000);
-  digitalWrite(LED, LED_LOW);
-  transmitter.send(OUTLET3_OFF, MSG_LENGTH);
-  delay(2000);
-
-  digitalWrite(LED, LED_HIGH);
-  transmitter.send(OUTLET4_ON, MSG_LENGTH);
-  delay(1000);
-  digitalWrite(LED, LED_LOW);
-  transmitter.send(OUTLET4_OFF, MSG_LENGTH);
-  delay(2000);
-
-  digitalWrite(LED, LED_HIGH);
-  transmitter.send(OUTLET5_ON, MSG_LENGTH);
-  delay(1000);
-  digitalWrite(LED, LED_LOW);
-  transmitter.send(OUTLET5_OFF, MSG_LENGTH);
-  delay(2000);
-
 }
